@@ -13,7 +13,7 @@ print("*** Gathering Data ***")
 tab_money = []
 tab_name = []
 tab_visit = []
-
+dict_buy = dict()
 dict_buy = f.gather_account(tab_tab)
 
 for key, account in dict_buy.items():

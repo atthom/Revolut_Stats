@@ -85,13 +85,13 @@ def gather_account(tab_tab):
         merchant = str(spending.reference)
 
         if merchant not in dict_buy:
-            dict_buy.update({merchant: f.Account(spending)})
+            dict_buy.update({merchant: Account(spending)})
         else:
             merc = dict_buy[merchant]
             merc.add(spending)
             dict_buy.update({merchant: merc})
 
-    f.printInfos(dict_buy, tab_all_money)
+    printInfos(dict_buy, tab_all_money)
 
     return dict_buy
 
