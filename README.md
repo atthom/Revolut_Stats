@@ -17,11 +17,8 @@
 
 #### TO DO List
 
-> - launch the script on all the csv into the folder.
 > - write a report in a .md file.
-> - merge the two scripts in a single file
 > - compile the script
-> - make one folder by report (.csv)
 
 #### Known bug
 > - bug for ploting the last year
