@@ -17,8 +17,8 @@
 
 #### TO DO List
 
-> - write a report in a .md file.
-> - compile the script
+> - compile the script or make a standalone version
+> - convert the report into several format
 
 #### Known bug
 > - bug for ploting the last year
