@@ -4,6 +4,7 @@ import csv
 import os
 from datetime import datetime
 import statistics
+import shutil
 
 
 class Account:
@@ -27,6 +28,43 @@ class Account:
             print(self.reference, ", You paid", round(self.balance, 1), "€ and visited", round(self.nb_visit, 1),
                   "times.")
 
+
+def make_stats(filename):
+    print("*** Parsing file", filename, "***")
+    tab_Spending = []
+    csv_parser(tab_Spending, "Revolut-EUR-Statement-Aug 2016 – Jan 2017.csv")
+
+    print("*** Gathering Data ***")
+    tab_money = []
+    tab_name = []
+    tab_visit = []
+
+    dict_buy = gather_account(tab_Spending)
+
+    for key, account in dict_buy.items():
+        tab_money.append(account.balance)
+        tab_name.append(str(key))
+        tab_visit.append(account.nb_visit)
+
+    print("*** Draw Pie charts ***")
+    draw_pie_charts(tab_name, tab_money, tab_visit)
+
+    tab_year = []
+    dict_Spending = dict()
+    for ss in tab_Spending:
+        year = ss.date.year
+        if year not in tab_year:
+            tab_year.append(year)
+            dict_Spending.update({year: []})
+        dict_Spending[year].append(ss)
+
+    for year, spending in dict_Spending.items():
+        print("*** Building plots for", year, "***")
+        str_year = str(year)
+        if os.path.exists(str_year):
+            shutil.rmtree(str_year)
+        os.mkdir(str_year)
+        plot_year(spending, str_year)
 
 def sortmerchant(dict):
     sorted_balance = sorted(dict.items(), key=lambda x: x[1].balance, reverse=True)
@@ -118,6 +156,7 @@ def draw_pie_charts(tab_name, tab_money, tab_visit):
     py.offline.plot(fig, validate=True, auto_open=False, filename="pie_char_visit_all_times.html", image_width=800,
                     image_height=800)
 
+
 def printInfoExchage(obj):
     print("Your most expensive merchant is ", obj[0][0], " with ", obj[0][1], "€ spend and visited ", obj[0][2],
           " times.")
@@ -177,9 +216,10 @@ class Spending:
             self.type = "COST"
         self.balance = float(row[6])
 
+#non_bmp_map = dict.fromkeys(range(0x10000, sys.maxunicode + 1), 0xfffd)
+def csv_parser(spendings, filename):
 
-def csv_parser(spendings):
-    with open("Revolut-EUR-Statement-Aug 2016 – Jan 2017.csv", 'r', encoding="utf8") as csvfile:
+    with open(filename, 'r', encoding="utf8") as csvfile:
         reader = csv.reader(csvfile, delimiter=',', quotechar='|')
         iterrow = iter(reader)
         next(iterrow)
