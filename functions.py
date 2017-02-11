@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 import statistics
 import shutil
-
+import markdown2
 
 class Spending:
     def __init__(self, row):
