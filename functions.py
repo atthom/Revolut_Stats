@@ -6,6 +6,20 @@ from datetime import datetime
 import statistics
 import shutil
 
+class Spending:
+    def __init__(self, row):
+        self.date = datetime.strptime(row[0], "%d %b %Y ")
+        self.reference = row[1]
+        try:
+            self.paidIn = float(row[3])
+            self.paidOut = 0.0
+            self.type = "PAID"
+        except:
+            self.paidOut = float(row[2])
+            self.paidIn = 0.0
+            self.type = "COST"
+        self.balance = float(row[6])
+
 
 class Account:
     def __init__(self, spend):
@@ -29,10 +43,20 @@ class Account:
                   "times.")
 
 
+def createfolder(item):
+    folder = item[:len(item) - 4]
+    if os.path.exists(folder):
+        shutil.rmtree(folder)
+    os.mkdir(folder)
+    shutil.copyfile(item, "./" + folder + "/" + item)
+    os.chdir('./' + folder)
+
 def make_stats(filename):
+    createfolder(filename)
+
     print("*** Parsing file", filename, "***")
     tab_Spending = []
-    csv_parser(tab_Spending, "Revolut-EUR-Statement-Aug 2016 – Jan 2017.csv")
+    csv_parser(tab_Spending, filename)
 
     print("*** Gathering Data ***")
     tab_money = []
@@ -66,6 +90,17 @@ def make_stats(filename):
         os.mkdir(str_year)
         plot_year(spending, str_year)
 
+
+def csv_parser(spendings, filename):
+
+    with open(filename, 'r', encoding="utf8") as csvfile:
+        reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+        iterrow = iter(reader)
+        next(iterrow)
+        for row in iterrow:
+            spendings.append(Spending(row))
+
+
 def sortmerchant(dict):
     sorted_balance = sorted(dict.items(), key=lambda x: x[1].balance, reverse=True)
     sorted_visite = sorted(dict.items(), key=lambda x: x[1].nb_visit, reverse=True)
@@ -83,7 +118,6 @@ def sortmerchant(dict):
 
     return [sorted_merchant_balance_obj, sorted_merchant_visite_obj]
 
-
 def print10(tab, first=True):
     if not first:
         for i in range(len(tab) - 1, len(tab) - 11, -1):
@@ -92,24 +126,26 @@ def print10(tab, first=True):
         for i in range(10):
             tab[i].tostring()
 
+def printInfos(dict, tab_all_money):
+    print("\n*** Info exchange ***")
+    tab = sortmerchant(dict)
+    print("*** Where you pay the most ***")
+    print10(tab[0])
+    print("\n*** Where you pay the less ***")
+    print10(tab[0], False)
+    print("\n*** Where you visit the most ***")
+    print10(tab[1])
+    print("\n*** Where you visit the less ***")
+    print10(tab[1], False)
+    print("\n*** Info about current money on account ***")
+    printInfoList(tab_all_money)
 
-def getInfoExchange(dict_buy):
-    max_obj = ["", 0, 0]
-    min_obj = ["", 10000, 2]
 
-    max_visit = ["", 0, 0]
-    min_visit = ["", 199, 10]
-
-    for obj in dict_buy:
-        if dict_buy[obj][0] > max_obj[1]:
-            max_obj = [obj, dict_buy[obj][0], dict_buy[obj][1]]
-        if dict_buy[obj][0] < min_obj[1]:
-            min_obj = [obj, dict_buy[obj][0], dict_buy[obj][1]]
-        if dict_buy[obj][1] > max_visit[2]:
-            max_visit = [obj, dict_buy[obj][0], dict_buy[obj][1]]
-        if dict_buy[obj][1] < min_visit[2]:
-            min_visit = [obj, dict_buy[obj][0], dict_buy[obj][1]]
-    return [max_obj, min_obj, max_visit, min_visit]
+def init_tab(nb, axis, balance, spending):
+    for i in range(nb):
+        axis.append(i)
+        balance.append(0)
+        spending.append(0)
 
 
 def gather_account(tab_tab):
@@ -168,21 +204,6 @@ def printInfoExchage(obj):
           " times.")
 
 
-def printInfos(dict, tab_all_money):
-    print("\n*** Info exchange ***")
-    tab = sortmerchant(dict)
-    print("*** Where you pay the most ***")
-    print10(tab[0])
-    print("\n*** Where you pay the less ***")
-    print10(tab[0], False)
-    print("\n*** Where you visit the most ***")
-    print10(tab[1])
-    print("\n*** Where you visit the less ***")
-    print10(tab[1], False)
-    print("\n*** Info about current money on account ***")
-    printInfoList(tab_all_money)
-
-
 def printInfoList(list):
     print("\nThe maximum spending : ", max(list), "€")
     print("The minimum spending : ", min(list), "€")
@@ -194,44 +215,6 @@ def printInfoList(list):
     print("The standard deviation is ", round(statistics.stdev(list), 1), "€")
     print("The variance is ", round(statistics.variance(list), 1), "€")
 
-
-def init_tab(nb, axis, balance, spending):
-    for i in range(nb):
-        axis.append(i)
-        balance.append(0)
-        spending.append(0)
-
-
-class Spending:
-    def __init__(self, row):
-        self.date = datetime.strptime(row[0], "%d %b %Y ")
-        self.reference = row[1]
-        try:
-            self.paidIn = float(row[3])
-            self.paidOut = 0.0
-            self.type = "PAID"
-        except:
-            self.paidOut = float(row[2])
-            self.paidIn = 0.0
-            self.type = "COST"
-        self.balance = float(row[6])
-
-#non_bmp_map = dict.fromkeys(range(0x10000, sys.maxunicode + 1), 0xfffd)
-def csv_parser(spendings, filename):
-
-    with open(filename, 'r', encoding="utf8") as csvfile:
-        reader = csv.reader(csvfile, delimiter=',', quotechar='|')
-        iterrow = iter(reader)
-        next(iterrow)
-        for row in iterrow:
-            spendings.append(Spending(row))
-
-
-def init_tab(nb, axis, balance, spending):
-    for i in range(nb):
-        axis.append(i)
-        balance.append(0)
-        spending.append(0)
 
 
 def barplot(tab1, tab2, title, name):

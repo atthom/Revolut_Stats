@@ -1,4 +1,11 @@
 import functions as f
+import os
 
 
-f.make_stats("Revolut-EUR-Statement-Aug 2016 – Jan 2017.csv")
+for item in os.listdir('.'):
+    if item.endswith(".csv"):
+        try:
+            f.make_stats(item)
+        except:
+            print("Bad format for file")
+
