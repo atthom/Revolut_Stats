@@ -9,18 +9,24 @@
 
 >Place your '.csv' file into the same folder as the python script files.
 >**You have to change the name of the .csv file in the script in order to use your own data !**
+> You should have python on you PATH, or able to launch it in your favorite way.
+> It's a python3 script, therefore it should be able to launch with all the 3.X versions.
 
 > `python.exe revolut_info.py`
+
 > `python.exe revolut_spendings.py`
 
-> After that, a folder by year would appear with the plots. They are in .html, use your favorite browser to show them.
+> After that, a folder with the name of the CSV has been created with the plots organized by year. They are in .html, use your favorite browser to show them.
+> You have also a little report in Markdown at the root of the created folder along with two pie charts. Feel free to check it out !
 
 #### TO DO List
 
 > - compile the script or make a standalone version
-> - convert the report into several format
+> - convert the report into several format (pdf, docx?, html...)
+> - draw a line plot for the whole .csv for each 
+> - draw a piechart for each payement by day of the week.
 
 #### Known bug
 > - bug for ploting the last year
 > - since that there is no 'category' section in the .csv given by revolut. The script is not able to draw things 'by category'
-
+> - same thing for the localisation of the payout !
