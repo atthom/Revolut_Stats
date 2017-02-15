@@ -7,6 +7,7 @@ import statistics
 import shutil
 import markdown2
 
+
 class Spending:
     def __init__(self, row):
         self.date = datetime.strptime(row[0], "%d %b %Y ")
@@ -41,7 +42,7 @@ class Account:
                    + str(round(self.nb_visit, 1)) + " times."
         elif self.paying == 0.0:
             return str(self.reference) + ": You paid " + str(round(self.balance, 1)) + "€ and visited it " \
-                + str(round(self.nb_visit, 1)) + " times."
+                   + str(round(self.nb_visit, 1)) + " times."
 
 
 def createfolder(item):
@@ -58,6 +59,17 @@ def get_name_report():
     return folder + ".md"
 
 
+def plot_all_year(tab_spend):
+    tab_date = []
+    tab_money_all = []
+    tab_variation = [0]
+    # print("adadad")
+    # for spending in tab_spend:
+    #     tab_date.append(spending.date)
+    #     tab_money_all.append(spending.balance)
+    #     tab_variation.append(spending.balance - tab_variation.index(len(tab_variation)-1))
+
+
 def make_stats(filename):
     createfolder(filename)
 
@@ -72,6 +84,8 @@ def make_stats(filename):
     tab_money = []
     tab_name = []
     tab_visit = []
+
+    plot_all_year(tab_Spending)
 
     dict_buy = gather_account(tab_Spending)
 
@@ -212,12 +226,10 @@ def init_tab(nb, axis, balance, spending):
 
 
 def gather_account(tab_tab):
-    tab_date = []
     tab_all_money = []
     dict_buy = dict()
 
     for spending in tab_tab:
-        tab_date.append(spending.date)
         tab_all_money.append(spending.balance)
         merchant = str(spending.reference)
 
@@ -304,7 +316,7 @@ def scatterplot(tab1, tab2, title, name):
     py.offline.plot(data, validate=True, auto_open=False, filename=name, image_width=800, image_height=600)
 
 
-def plot_year(tab_spending, year):
+def plot_year(tab_spending, year=None):
     tab_month_name = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
                       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     tab_day, tab_week = [], []
@@ -342,76 +354,48 @@ def plot_year(tab_spending, year):
             tab_daily_balance[i] = current_balance
 
     f = open(get_name_report(), "a")
-    f.write("\n#### Plots by Day")
 
-    print("*** Building plots by Day ***")
-    scatterplot(tab_day,
-                tab_daily_balance,
-                'Current balance by Day',
-                'current_balance_by_day.html')
+    draw_scatter_plot("Day", tab_day, tab_daily_balance, tab_daily_spending, year, f)
 
-    os.rename('current_balance_by_day.html', year + '/current_balance_by_day.html')
-    f.write("\n > [Current balance by Day](./" + year + '/current_balance_by_day.html)')
+    draw_bar_plot("Week", tab_week, tab_weekly_balance, tab_weekly_spending, year, f)
 
-    scatterplot(tab_day,
-                tab_daily_spending,
-                'Current variation by Day',
-                'current_variation_by_day.html')
+    draw_scatter_plot("Week", tab_week, tab_weekly_balance, tab_weekly_spending, year, f)
 
-    os.rename('current_variation_by_day.html', year + '/current_variation_by_day.html')
-    f.write("\n > [Current variation by Day](./" + year + '/current_variation_by_day.html)')
-
-    f.write("\n#### Plots by Week")
-    print("*** Plots by Week ***")
-    barplot(tab_week,
-            tab_weekly_balance,
-            'Current balance by Week',
-            'current_balance_by_week_Bar.html')
-
-    os.rename('current_balance_by_week_Bar.html', year + '/current_balance_by_week_Bar.html')
-    f.write("\n > [Current balance by Week](./" + year + '/current_balance_by_week_Bar.html)')
-
-    barplot(tab_week,
-            tab_weekly_spending,
-            'Current variation by Week',
-            'current_variation_by_week_Bar.html')
-
-    os.rename('current_variation_by_week_Bar.html', year + '/current_variation_by_week_Bar.html')
-    f.write("\n > [Current variation by Week](./" + year + '/current_variation_by_week_Bar.html)')
-
-    scatterplot(tab_week,
-                tab_weekly_balance,
-                'Current balance by Week',
-                'current_balance_by_Week_Scatter.html')
-
-    os.rename('current_balance_by_Week_Scatter.html', year + '/current_balance_by_Week_Scatter.html')
-    f.write("\n > [Current balance by Week Scatter](./" + year + '/current_balance_by_Week_Scatter.html)')
-
-    scatterplot(tab_week,
-                tab_weekly_spending,
-                'Current variation by Week',
-                'current_variation_by_Week_Scatter.html')
-
-    os.rename('current_variation_by_Week_Scatter.html', year + '/current_variation_by_Week_Scatter.html')
-    f.write("\n > [Current variation by Week Scatter](./" + year + '/current_variation_by_Week_Scatter.html)')
-
-    f.write("\n#### Plots by Month")
-    print("*** Building plots by Month ***")
-
-    barplot(tab_month_name,
-            tab_monthly_balance,
-            'Current balance by Month',
-            'current_balance_by_month.html')
-
-    os.rename('current_balance_by_month.html', year + '/current_balance_by_month.html')
-    f.write("\n > [Current balance by Month](./" + year + '/current_balance_by_month.html)')
-
-    barplot(tab_month_name,
-            tab_monthly_spending,
-            'Current variation by Month',
-            'current_variation_by_month.html')
-
-    os.rename('current_variation_by_month.html', year + '/current_variation_by_month.html')
-    f.write("\n > [Current variation by Month](./" + year + '/current_variation_by_month.html)')
+    draw_bar_plot("Month", tab_month_name, tab_monthly_balance, tab_monthly_spending, year, f)
 
     f.close()
+
+
+def draw_scatter_plot(time, tab1, tab2, tab3, year, f):
+    f.write("\n#### Plots by " + time)
+    print("*** Building plots by " + time + "***")
+    filename = time + "_balance_scatter.html"
+    title = "Balance by " + time
+
+    scatterplot(tab1, tab2, 'balance by ' + time, filename)
+
+    os.rename(filename, year + '/' + filename)
+    f.write("\n > [" + title + "](./" + year + '/' + filename + ')')
+    filename = time + '_variation_scatter.html'
+    title = 'Variation by ' + time
+    scatterplot(tab1, tab3, title, filename)
+
+    os.rename(filename, year + '/' + filename)
+    f.write("\n > [" + title + "](./" + year + '/' + filename + ')')
+
+
+def draw_bar_plot(time, tab1, tab2, tab3, year, f):
+    f.write("\n#### Plots by " + time)
+    print("*** Building plots by " + time + "***")
+    filename = time + '_balance_bar.html'
+    title = 'Balance by ' + time
+    barplot(tab1, tab2, 'Balance by ' + time, filename)
+
+    os.rename(filename, year + '/' + filename)
+    f.write("\n > [" + title + "](./" + year + '/' + filename + ')')
+    filename = time + '_variation_bar.html'
+    title = 'Variation by ' + time
+    barplot(tab1, tab3, title, filename)
+
+    os.rename(filename, year + '/' + filename)
+    f.write("\n > [" + title + "](./" + year + '/' + filename + ')')
