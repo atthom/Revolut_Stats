@@ -97,12 +97,15 @@ def plot_all_year(tab_spend):
             tab_variation_day.append(next_val)
         i += 1
 
-    f = open(get_name_report(), "a")
-    f.write("\n\n### Plot of the whole csv file " + os.path.relpath(".", ".."))
+    f = open(get_name_report(), "a", encoding="utf-8")
+    f.write("\n\n## Plot of the whole csv file " + os.path.relpath(".", ".."))
     print("*** Writing plots for all time ***")
-    if os.path.exists("all_time"):
-        shutil.rmtree("all_time")
-    os.mkdir("all_time")
+
+    f.write("\n\n### Pie charts\n")
+    f.write("\n > [Pie Chart on money paid by merchant](./all_time/pie_char_balance_all_times.html)")
+    f.write("\n > [Pie Chart on number of visits by merchant](./all_time/pie_char_visit_all_times.html)")
+
+    f.write("\n\n### Scatter plots\n")
     draw_scatter_plot("All time by day", tab_date, tab_money_day, tab_variation_day, "all_time", f)
     draw_scatter_plot("All time by week", tab_date, tab_money_day, tab_variation_day, "all_time", f)
     draw_scatter_plot("All time by month", tab_date, tab_money_day, tab_variation_day, "all_time", f)
@@ -287,6 +290,10 @@ def gather_account(tab_tab):
 def draw_pie_charts(tab_name, tab_money, tab_visit):
     print("*** Draw Pie charts ***")
 
+    if os.path.exists("all_time"):
+        shutil.rmtree("all_time")
+    os.mkdir("all_time")
+
     fig = {
         'data': [{'labels': tab_name,
                   'values': tab_money,
@@ -294,9 +301,11 @@ def draw_pie_charts(tab_name, tab_money, tab_visit):
                   'type': 'pie'}],
         'layout': {'title': 'Pie Chart on money paid by merchant'}
     }
+    filename = "pie_char_balance_all_times.html"
 
-    py.offline.plot(fig, validate=True, auto_open=False, filename="pie_char_balance_all_times.html", image_width=800,
-                    image_height=800)
+    py.offline.plot(fig, validate=True, auto_open=False, filename=filename, image_width=800, image_height=800)
+
+    os.rename(filename, "all_time/" + filename)
 
     fig = {
         'data': [{'labels': tab_name,
@@ -305,14 +314,10 @@ def draw_pie_charts(tab_name, tab_money, tab_visit):
         'layout': {'title': 'Pie Chart on number of visits by merchant'}
     }
 
-    py.offline.plot(fig, validate=True, auto_open=False, filename="pie_char_visit_all_times.html", image_width=800,
-                    image_height=800)
+    filename = "pie_char_visit_all_times.html"
+    py.offline.plot(fig, validate=True, auto_open=False, filename=filename, image_width=800,  image_height=800)
 
-    f = open(get_name_report(), "a", encoding="utf-8")
-    f.write("\n\n### Pie charts\n")
-    f.write("\n > [Pie Chart on money paid by merchant](pie_char_balance_all_times.html)")
-    f.write("\n > [Pie Chart on number of visits by merchant](pie_char_visit_all_times.html)")
-    f.close()
+    os.rename(filename, "all_time/" + filename)
 
 
 def printInfoExchage(obj):
