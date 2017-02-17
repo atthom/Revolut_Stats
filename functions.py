@@ -61,13 +61,52 @@ def get_name_report():
 
 def plot_all_year(tab_spend):
     tab_date = []
-    tab_money_all = []
-    tab_variation = [0]
-    # print("adadad")
-    # for spending in tab_spend:
-    #     tab_date.append(spending.date)
-    #     tab_money_all.append(spending.balance)
-    #     tab_variation.append(spending.balance - tab_variation.index(len(tab_variation)-1))
+    tab_money_day = []
+    tab_variation_day = [0]
+
+    tab_date_weekly = []
+    tab_date_monthly = []
+    tab_variation_weekly = [0]
+    tab_variation_monthly = [0]
+
+    week = 7
+    month = 30
+    i = 0
+    for spending in tab_spend:
+
+        if i % week == 0:
+            tab_date_weekly.append(spending.date)
+            previous_val = tab_variation_weekly.pop(len(tab_variation_weekly) - 1)
+            next_val = spending.balance - previous_val
+            tab_variation_weekly.append(previous_val)
+            tab_variation_weekly.append(next_val)
+        if i % month == 0:
+            tab_date_monthly.append(spending.date)
+            tab_variation_monthly.append(spending.balance)
+            previous_val = tab_variation_monthly.pop(len(tab_variation_monthly) - 1)
+            next_val = spending.balance - previous_val
+            tab_variation_monthly.append(previous_val)
+            tab_variation_monthly.append(next_val)
+
+        if spending.date not in tab_date:
+            tab_date.append(spending.date)
+            tab_money_day.append(spending.balance)
+            previous_val = tab_variation_day.pop(len(tab_variation_day) - 1)
+            next_val = spending.balance - previous_val
+            tab_variation_day.append(previous_val)
+            tab_variation_day.append(next_val)
+        i += 1
+
+    f = open(get_name_report(), "a")
+    f.write("\n\n### Plot of the whole csv file " + os.path.relpath(".", ".."))
+    print("*** Writing plots for all time ***")
+    if os.path.exists("all_time"):
+        shutil.rmtree("all_time")
+    os.mkdir("all_time")
+    draw_scatter_plot("All time by day", tab_date, tab_money_day, tab_variation_day, "all_time", f)
+    draw_scatter_plot("All time by week", tab_date, tab_money_day, tab_variation_day, "all_time", f)
+    draw_scatter_plot("All time by month", tab_date, tab_money_day, tab_variation_day, "all_time", f)
+    f.close()
 
 
 def make_stats(filename):
@@ -84,8 +123,6 @@ def make_stats(filename):
     tab_money = []
     tab_name = []
     tab_visit = []
-
-    plot_all_year(tab_Spending)
 
     dict_buy = gather_account(tab_Spending)
 
@@ -104,6 +141,8 @@ def make_stats(filename):
             tab_year.append(year)
             dict_Spending.update({year: []})
         dict_Spending[year].append(ss)
+
+    plot_all_year(tab_Spending)
 
     for year, spending in dict_Spending.items():
         print("*** Building plots for", year, "***")
