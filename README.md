@@ -23,7 +23,6 @@
 
 > - compile the script or make a standalone version
 > - convert the report into several format (pdf, docx?, html...)
-> - draw a line plot for the whole .csv for each 
 > - draw a piechart for each payement by day of the week.
 
 #### Known bug
