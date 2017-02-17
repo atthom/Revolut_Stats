@@ -356,8 +356,39 @@ def barplot(tab1, tab2, title, name):
 
 
 def scatterplot(tab1, tab2, title, name):
-    data = [go.Scatter(x=tab1, y=tab2, mode='lines')]
-    py.offline.plot(data, validate=True, auto_open=False, filename=name, image_width=800, image_height=600)
+    layout = go.Layout(
+        title=title,
+        hovermode='closest',
+        xaxis=dict(
+            autorange=True,
+            title='Time',
+            ticklen=5,
+            zeroline=True,
+            showline=True,
+            autotick=True,
+            ticks='',
+            gridwidth=2
+        ),
+        yaxis=dict(
+            autorange=True,
+            title='Money',
+            ticklen=5,
+            zeroline=True,
+            showline=True,
+            autotick=True,
+            ticks='',
+            gridwidth=2
+
+        ),
+        showlegend=False
+    )
+    fig = {
+        'data': [go.Scatter(x=tab1,y=tab2)],
+        'layout': layout
+    }
+
+    #data = [go.Scatter(x=tab1, y=tab2, mode='lines')]
+    py.offline.plot(fig, validate=True, auto_open=False, filename=name, image_width=800, image_height=600)
 
 
 def plot_year(tab_spending, year=None):
