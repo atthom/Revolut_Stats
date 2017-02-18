@@ -60,7 +60,7 @@ def get_name_report():
 
 
 def append_step_for_all_year(i, step, tab_date, tab_money, tab_var, spending):
-    if i % step:
+    if step == 1:
         tab_date.append(spending.date)
         if not tab_money:
             previous_val = 0
@@ -68,7 +68,16 @@ def append_step_for_all_year(i, step, tab_date, tab_money, tab_var, spending):
             previous_val = tab_money.pop()
 
         tab_var.append(previous_val - spending.balance)
+        tab_money.append(previous_val)
+        tab_money.append(spending.balance)
+    elif i % step:
+        tab_date.append(spending.date)
+        if not tab_money:
+            previous_val = 0
+        else:
+            previous_val = tab_money.pop()
 
+        tab_var.append(previous_val - spending.balance)
         tab_money.append(previous_val)
         tab_money.append(spending.balance)
 
@@ -87,7 +96,7 @@ def plot_all_year(tab_spend):
 
     week = 7
     month = 30
-    i = 0
+    i = 1
     for spending in tab_spend:
 
         append_step_for_all_year(i, week, tab_date_weekly, tab_money_week, tab_variation_weekly, spending)
@@ -394,49 +403,37 @@ def scatterplot(tab1, tab2, title, name):
 def plot_year(tab_spending, year=None):
     tab_month_name = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
                       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    tab_day, tab_week = [], []
-    tab_daily_balance, tab_weekly_balance = [], []
-    tab_monthly_balance = []
-    tab_daily_spending = []
-    tab_weekly_spending = []
-    tab_monthly_spending = []
+    tab_date = []
+    tab_money_day = []
+    tab_variation_day = []
 
-    for i in range(13):
-        tab_monthly_balance.append(0)
-        tab_monthly_spending.append(0)
+    tab_date_weekly = []
+    tab_money_week = []
+    tab_variation_weekly = []
+    tab_money_month = []
+    tab_variation_monthly = []
 
-    init_tab(366, tab_day, tab_daily_balance, tab_daily_spending)
-    init_tab(53, tab_week, tab_weekly_balance, tab_weekly_spending)
+    week = 7
+    month = 30
+    i = 1
+    for spending in tab_spending:
+        append_step_for_all_year(i, week, tab_date_weekly, tab_money_week, tab_variation_weekly, spending)
 
-    for ss in tab_spending:
-        isoCal = ss.date.isocalendar()
-        month = ss.date.timetuple()[1]
-        nbDay = ss.date.timetuple().tm_yday
-        tab_daily_balance[nbDay] = ss.balance
-        tab_weekly_balance[isoCal[1]] = ss.balance
-        tab_monthly_balance[month] = ss.balance
-        tab_daily_spending[nbDay] += (ss.paidIn - ss.paidOut)
-        tab_weekly_spending[isoCal[1]] += (ss.paidIn - ss.paidOut)
-        tab_monthly_spending[month] += (ss.paidIn - ss.paidOut)
+        append_step_for_all_year(i, month, tab_month_name, tab_money_month, tab_variation_monthly, spending)
 
-    current_balance = 0
+        append_step_for_all_year(i, 1, tab_date, tab_money_day, tab_variation_day, spending)
 
-    for i in range(366):
-        value = tab_daily_balance[i]
-        if value > 0:
-            current_balance = value
-        if value == 0 and current_balance > 0:
-            tab_daily_balance[i] = current_balance
+        i += 1
 
     f = open(get_name_report(), "a")
 
-    draw_scatter_plot("Day", tab_day, tab_daily_balance, tab_daily_spending, year, f)
+    draw_scatter_plot("Day", tab_date, tab_money_day, tab_variation_day, year, f)
 
-    draw_bar_plot("Week", tab_week, tab_weekly_balance, tab_weekly_spending, year, f)
+    draw_bar_plot("Week", tab_date_weekly, tab_money_week, tab_variation_weekly, year, f)
 
-    draw_scatter_plot("Week", tab_week, tab_weekly_balance, tab_weekly_spending, year, f)
+    draw_scatter_plot("Week", tab_date_weekly, tab_money_week, tab_variation_weekly, year, f)
 
-    draw_bar_plot("Month", tab_month_name, tab_monthly_balance, tab_monthly_spending, year, f)
+    draw_bar_plot("Month", tab_month_name, tab_money_month, tab_variation_monthly, year, f)
 
     f.close()
 
