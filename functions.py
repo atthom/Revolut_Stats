@@ -59,42 +59,43 @@ def get_name_report():
     return folder + ".md"
 
 
+def append_step_for_all_year(i, step, tab_date, tab_money, tab_var, spending):
+    if i % step:
+        tab_date.append(spending.date)
+        if not tab_money:
+            previous_val = 0
+        else:
+            previous_val = tab_money.pop()
+
+        tab_var.append(previous_val - spending.balance)
+
+        tab_money.append(previous_val)
+        tab_money.append(spending.balance)
+
+
 def plot_all_year(tab_spend):
     tab_date = []
     tab_money_day = []
-    tab_variation_day = [0]
+    tab_variation_day = []
 
     tab_date_weekly = []
     tab_date_monthly = []
-    tab_variation_weekly = [0]
-    tab_variation_monthly = [0]
+    tab_money_week = []
+    tab_variation_weekly = []
+    tab_money_month = []
+    tab_variation_monthly = []
 
     week = 7
     month = 30
     i = 0
     for spending in tab_spend:
 
-        if i % week == 0:
-            tab_date_weekly.append(spending.date)
-            previous_val = tab_variation_weekly.pop(len(tab_variation_weekly) - 1)
-            next_val = spending.balance - previous_val
-            tab_variation_weekly.append(previous_val)
-            tab_variation_weekly.append(next_val)
-        if i % month == 0:
-            tab_date_monthly.append(spending.date)
-            tab_variation_monthly.append(spending.balance)
-            previous_val = tab_variation_monthly.pop(len(tab_variation_monthly) - 1)
-            next_val = spending.balance - previous_val
-            tab_variation_monthly.append(previous_val)
-            tab_variation_monthly.append(next_val)
+        append_step_for_all_year(i, week, tab_date_weekly, tab_money_week, tab_variation_weekly, spending)
 
-        if spending.date not in tab_date:
-            tab_date.append(spending.date)
-            tab_money_day.append(spending.balance)
-            previous_val = tab_variation_day.pop(len(tab_variation_day) - 1)
-            next_val = spending.balance - previous_val
-            tab_variation_day.append(previous_val)
-            tab_variation_day.append(next_val)
+        append_step_for_all_year(i, month, tab_date_monthly, tab_money_month, tab_variation_monthly, spending)
+
+        append_step_for_all_year(i, 1, tab_date, tab_money_day, tab_variation_day, spending)
+
         i += 1
 
     f = open(get_name_report(), "a", encoding="utf-8")
@@ -107,8 +108,8 @@ def plot_all_year(tab_spend):
 
     f.write("\n\n### Scatter plots\n")
     draw_scatter_plot("All time by day", tab_date, tab_money_day, tab_variation_day, "all_time", f)
-    draw_scatter_plot("All time by week", tab_date, tab_money_day, tab_variation_day, "all_time", f)
-    draw_scatter_plot("All time by month", tab_date, tab_money_day, tab_variation_day, "all_time", f)
+    draw_scatter_plot("All time by week", tab_date_weekly, tab_money_week, tab_variation_weekly, "all_time", f)
+    draw_scatter_plot("All time by month", tab_date_monthly, tab_money_month, tab_variation_monthly, "all_time", f)
     f.close()
 
 
@@ -315,7 +316,7 @@ def draw_pie_charts(tab_name, tab_money, tab_visit):
     }
 
     filename = "pie_char_visit_all_times.html"
-    py.offline.plot(fig, validate=True, auto_open=False, filename=filename, image_width=800,  image_height=800)
+    py.offline.plot(fig, validate=True, auto_open=False, filename=filename, image_width=800, image_height=800)
 
     os.rename(filename, "all_time/" + filename)
 
@@ -383,11 +384,10 @@ def scatterplot(tab1, tab2, title, name):
         showlegend=False
     )
     fig = {
-        'data': [go.Scatter(x=tab1,y=tab2)],
+        'data': [go.Scatter(x=tab1, y=tab2)],
         'layout': layout
     }
 
-    #data = [go.Scatter(x=tab1, y=tab2, mode='lines')]
     py.offline.plot(fig, validate=True, auto_open=False, filename=name, image_width=800, image_height=600)
 
 
