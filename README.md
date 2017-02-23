@@ -23,9 +23,8 @@
 
 > - compile the script or make a standalone version
 > - convert the report into several format (pdf, docx?, html...)
-> - draw a piechart for each payement by day of the week.
+> - draw a pie chart for each payment by day of the week.
 
 #### Known bug
-> - bug for ploting the last year
-> - since that there is no 'category' section in the .csv given by revolut. The script is not able to draw things 'by category'
+> - since that there is no 'category' section in the .csv given by Revolut. The script is not able to draw things 'by category'
 > - same thing for the localisation of the payout !
