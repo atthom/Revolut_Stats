@@ -95,6 +95,7 @@ def plot_all_year(tab_spend):
     tab_variation_monthly = []
 
     tab_money_by_weekday = [0, 0, 0, 0, 0, 0, 0]
+    tab_nb_visit_by_weekday = [0, 0, 0, 0, 0, 0, 0]
     tab_name = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
     week = 7
@@ -103,6 +104,7 @@ def plot_all_year(tab_spend):
     for spending in tab_spend:
         weekday = spending.date.weekday()
         tab_money_by_weekday[weekday] += spending.paidOut
+        tab_nb_visit_by_weekday[weekday] += 1
 
         append_step_for_all_year(i, week, tab_date_weekly, tab_money_week, tab_variation_weekly, spending)
 
@@ -119,9 +121,11 @@ def plot_all_year(tab_spend):
     f.write("\n\n### Pie charts\n")
     f.write("\n > [Pie Chart on money paid by merchant](./all_time/pie_char_balance_all_times.html)")
     f.write("\n > [Pie Chart on number of visits by merchant](./all_time/pie_char_visit_all_times.html)")
-    f.write("\n > [Pie Chart on money spend by day of week](./all_time/pie_char_by_day_of_week_all_times.html)")
+    f.write("\n > [Pie Chart on money spend by day of week](./all_time/pie_char_money_by_day_of_week_all_times.html)")
+    f.write("\n > [Pie Chart on number of visit by day of week](./all_time/pie_char_visit_by_dayofweek_all_times.html)")
 
-    draw_pie_of_week(tab_name, tab_money_by_weekday);
+    draw_pie_of_week(tab_name, tab_money_by_weekday, "pie_char_money_by_day_of_week_all_times.html")
+    draw_pie_of_week(tab_name, tab_nb_visit_by_weekday, "pie_char_visit_by_dayofweek_all_times.html")
 
     f.write("\n\n### Scatter plots\n")
     draw_scatter_plot("All time by day", tab_date, tab_money_day, tab_variation_day, "all_time", f)
@@ -305,7 +309,7 @@ def gather_account(tab_tab):
     return dict_buy
 
 
-def draw_pie_of_week(tab_name, tab_money):
+def draw_pie_of_week(tab_name, tab_money, filename):
     print("*** Draw Pie charts ***")
 
     fig = {
@@ -315,7 +319,6 @@ def draw_pie_of_week(tab_name, tab_money):
                   'type': 'pie'}],
         'layout': {'title': 'Money spend by day of week'}
     }
-    filename = "pie_char_by_day_of_week_all_times.html"
 
     py.offline.plot(fig, validate=True, auto_open=False, filename=filename, image_width=800, image_height=800)
 
