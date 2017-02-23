@@ -125,10 +125,10 @@ def plot_all_year(tab_spend):
     print("*** Writing plots for all time ***")
 
     f.write("\n\n### Pie charts\n")
-    f.write("\n > [Pie Chart on money paid by merchant](./all_time/pie_char_balance_all_times.html)")
-    f.write("\n > [Pie Chart on number of visits by merchant](./all_time/pie_char_visit_all_times.html)")
-    f.write("\n > [Pie Chart on money spend by day of week](./all_time/pie_char_money_by_day_of_week_all_times.html)")
-    f.write("\n > [Pie Chart on number of visit by day of week](./all_time/pie_char_visit_by_dayofweek_all_times.html)")
+    f.write("\n- [Pie Chart on money paid by merchant](./all_time/pie_char_balance_all_times.html)")
+    f.write("\n- [Pie Chart on number of visits by merchant](./all_time/pie_char_visit_all_times.html)")
+    f.write("\n- [Pie Chart on money spend by day of week](./all_time/pie_char_money_by_day_of_week_all_times.html)")
+    f.write("\n- [Pie Chart on number of visit by day of week](./all_time/pie_char_visit_by_dayofweek_all_times.html)")
 
     draw_pie_of_week(tab_name, tab_money_by_weekday, "pie_char_money_by_day_of_week_all_times.html")
     draw_pie_of_week(tab_name, tab_nb_visit_by_weekday, "pie_char_visit_by_dayofweek_all_times.html")
@@ -237,24 +237,27 @@ def print10(tab, first=True):
 
 
 def print10_report(tab, file, first=True):
+    k = 1
     if not first:
         for i in range(len(tab) - 1, len(tab) - 11, -1):
-            file.write("\n >" + str(tab[i].tostring()))
+            file.write("\n" + str(k) + ". " + str(tab[i].tostring()))
+            k += 1
     else:
         for i in range(10):
-            file.write("\n >" + str(tab[i].tostring()))
+            file.write("\n" + str(k) + ". " + str(tab[i].tostring()))
+            k += 1
 
 
 def print_info_list_report(list, file):
-    file.write("\n > The maximum spending : " + str(max(list)) + "€")
-    file.write("\n > The minimum spending : " + str(min(list)) + "€")
-    file.write("\n > The mean : " + str(round(statistics.mean(list), 1)) + "€")
-    file.write("\n > The median : " + str(round(statistics.median(list), 1)) + "€")
-    file.write("\n > The low mean : " + str(round(statistics.median_low(list), 1)) + "€")
-    file.write("\n > The higher median : " + str(round(statistics.median_high(list), 1)) + "€")
-    file.write("\n > The mode is " + str(round(statistics.mode(list), 1)) + "€")
-    file.write("\n > The standard deviation is " + str(round(statistics.stdev(list), 1)) + "€")
-    file.write("\n > The variance is " + str(round(statistics.variance(list), 1)) + "€")
+    file.write("\n- The maximum spending : " + str(max(list)) + "€")
+    file.write("\n- The minimum spending : " + str(min(list)) + "€")
+    file.write("\n- The mean : " + str(round(statistics.mean(list), 1)) + "€")
+    file.write("\n- The median : " + str(round(statistics.median(list), 1)) + "€")
+    file.write("\n- The low mean : " + str(round(statistics.median_low(list), 1)) + "€")
+    file.write("\n- The higher median : " + str(round(statistics.median_high(list), 1)) + "€")
+    file.write("\n- The mode is " + str(round(statistics.mode(list), 1)) + "€")
+    file.write("\n- The standard deviation is " + str(round(statistics.stdev(list), 1)) + "€")
+    file.write("\n- The variance is " + str(round(statistics.variance(list), 1)) + "€")
 
 
 def print_info_report(tab, tab_all_money):
@@ -493,13 +496,13 @@ def draw_scatter_plot(time, tab1, tab2, tab3, year, f):
     scatterplot(tab1, tab2, 'balance by ' + time, filename)
 
     os.rename(filename, year + '/' + filename)
-    f.write("\n > [" + title + "](./" + year + '/' + filename + ')')
+    f.write("\n- [" + title + "](./" + year + '/' + filename + ')')
     filename = time + '_variation_scatter.html'
     title = 'Variation by ' + time
     scatterplot(tab1, tab3, title, filename)
 
     os.rename(filename, year + '/' + filename)
-    f.write("\n > [" + title + "](./" + year + '/' + filename + ')')
+    f.write("\n- [" + title + "](./" + year + '/' + filename + ')')
 
 
 def draw_bar_plot(time, tab1, tab2, tab3, year, f):
@@ -510,10 +513,10 @@ def draw_bar_plot(time, tab1, tab2, tab3, year, f):
     barplot(tab1, tab2, 'Balance by ' + time, filename)
 
     os.rename(filename, year + '/' + filename)
-    f.write("\n > [" + title + "](./" + year + '/' + filename + ')')
+    f.write("\n- [" + title + "](./" + year + '/' + filename + ')')
     filename = time + '_variation_bar.html'
     title = 'Variation by ' + time
     barplot(tab1, tab3, title, filename)
 
     os.rename(filename, year + '/' + filename)
-    f.write("\n > [" + title + "](./" + year + '/' + filename + ')')
+    f.write("\n- [" + title + "](./" + year + '/' + filename + ')')
