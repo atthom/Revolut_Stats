@@ -51,6 +51,7 @@ def createfolder(item):
         shutil.rmtree(folder)
     os.mkdir(folder)
     shutil.copyfile(item, "./" + folder + "/" + item)
+    shutil.copyfile("modest.css", "./" + folder + "/modest.css")
     os.chdir('./' + folder)
 
 
@@ -188,8 +189,10 @@ def make_stats(filename):
 
    # report = open(get_name_report(), "r").readlines()
     html = open(get_name_report_html(), "w",  encoding="utf-8")
-    html.write("<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<title>Report " + get_name_report_html()
-               + "</title>\n <meta charset=\"UTF-8\"></head>\n</body>\n")
+    html.write("<!DOCTYPE html>\n<html lang=\"en\">\n<head>"
+               + "\n<title>Report " + get_name_report_html() + "</title>"
+               + "<link rel=\"stylesheet\" href=\"modest.css\">"
+               + "\n<meta charset=\"UTF-8\"></head>\n</body>\n")
 
     html.write(markdown2.markdown_path(get_name_report(), encoding="utf-8"))
 
