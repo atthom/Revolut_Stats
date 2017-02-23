@@ -59,6 +59,11 @@ def get_name_report():
     return folder + ".md"
 
 
+def get_name_report_html():
+    folder = os.path.relpath(".", "..")
+    return folder + ".html"
+
+
 def append_step_for_all_year(i, step, tab_date, tab_money, tab_var, spending):
     if step == 1:
         tab_date.append(spending.date)
@@ -180,6 +185,16 @@ def make_stats(filename):
             shutil.rmtree(str_year)
         os.mkdir(str_year)
         plot_year(spending, str_year)
+
+   # report = open(get_name_report(), "r").readlines()
+    html = open(get_name_report_html(), "w",  encoding="utf-8")
+    html.write("<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<title>Report " + get_name_report_html()
+               + "</title>\n <meta charset=\"UTF-8\"></head>\n</body>\n")
+
+    html.write(markdown2.markdown_path(get_name_report(), encoding="utf-8"))
+
+    html.write("\n</body>\n</html>")
+    html.close()
 
 
 def csv_parser(spendings, filename):
