@@ -6,7 +6,7 @@ from datetime import datetime
 import statistics
 import shutil
 import markdown2
-
+import pdfkit
 
 class Spending:
     def __init__(self, row):
@@ -63,6 +63,11 @@ def get_name_report():
 def get_name_report_html():
     folder = os.path.relpath(".", "..")
     return folder + ".html"
+
+
+def get_name_report_pdf():
+    folder = os.path.relpath(".", "..")
+    return folder + ".pdf"
 
 
 def append_step_for_all_year(i, step, tab_date, tab_money, tab_var, spending):
@@ -195,9 +200,12 @@ def make_stats(filename):
                + "\n<meta charset=\"UTF-8\"></head>\n</body>\n")
 
     html.write(markdown2.markdown_path(get_name_report(), encoding="utf-8"))
-
     html.write("\n</body>\n</html>")
     html.close()
+
+    path_wkthmltopdf = r'C:\_Installs\wkhtmltopdf\bin\wkhtmltopdf.exe'
+    config = pdfkit.configuration(wkhtmltopdf=path_wkthmltopdf)
+    pdfkit.from_file(get_name_report_html(), get_name_report_pdf(), configuration=config)
 
 
 def csv_parser(spendings, filename):
