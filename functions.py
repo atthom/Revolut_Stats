@@ -1,5 +1,6 @@
 import plotly as py
 import plotly.graph_objs as go
+import plotly.tools as tls
 import csv
 import os
 from datetime import datetime
@@ -7,6 +8,7 @@ import statistics
 import shutil
 import markdown2
 import pdfkit
+
 
 class Spending:
     def __init__(self, row):
@@ -192,7 +194,6 @@ def make_stats(filename):
         os.mkdir(str_year)
         plot_year(spending, str_year)
 
-   # report = open(get_name_report(), "r").readlines()
     html = open(get_name_report_html(), "w",  encoding="utf-8")
     html.write("<!DOCTYPE html>\n<html lang=\"en\">\n<head>"
                + "\n<title>Report " + get_name_report_html() + "</title>"
@@ -350,7 +351,6 @@ def draw_pie_of_week(tab_name, tab_money, filename):
     }
 
     py.offline.plot(fig, validate=True, auto_open=False, filename=filename, image_width=800, image_height=800)
-
     os.rename(filename, "all_time/" + filename)
 
 
